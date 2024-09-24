@@ -1,19 +1,41 @@
+import os
+
 def read_data(filename):
-    # TODO) Read `filename` as a list of integer numbers
+    f = open(os.path.join(os.path.dirname(__file__), filename), 'r')
     data = []
+    index = 0
+    for line in f.read().split('\n'):
+        if(index < 1):
+            index += 1
+            continue
+        data.append(tuple(map(int, line.split(','))))
     return data
 
 def calc_weighted_average(data_2d, weight):
-    # TODO) Calculate the weighted averages of each row of `data_2d`
     average = []
+    for row in data_2d:
+        average.append(row[0] * weight[0] + row[1] * weight[1])
     return average
 
 def analyze_data(data_1d):
-    # TODO) Derive summary of the given `data_1d`
-    # Note) Please don't use NumPy and other libraries. Do it yourself.
+    length = len(data_1d)
+
     mean = 0
+    for row in data_1d:
+        mean += row
+    mean /= length
+
     var = 0
-    median = 0
+    for row in data_1d:
+        var += (row - mean) ** 2
+    var /= length
+
+    data_1d.sort()
+    if length % 2 == 0:
+        median = (data_1d[length//2-1] + data_1d[length//2]) / 2
+    else:
+        median = data_1d[length//2]
+
     return mean, var, median, min(data_1d), max(data_1d)
 
 if __name__ == '__main__':
@@ -22,7 +44,7 @@ if __name__ == '__main__':
         average = calc_weighted_average(data, [40/125, 60/100])
 
         # Write the analysis report as a markdown file
-        with open('class_score_analysis.md', 'w') as report:
+        with open(os.path.join(os.path.dirname(__file__), 'class_score_analysis.md'), 'w') as report:
             report.write('### Individual Score\n\n')
             report.write('| Midterm | Final | Average |\n')
             report.write('| ------- | ----- | ----- |\n')
