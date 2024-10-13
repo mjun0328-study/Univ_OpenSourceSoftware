@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -6,12 +7,16 @@ if __name__ == '__main__':
     final_range = np.array([0, 100])
 
     # Load score data
-    class_kr = np.loadtxt('data/class_score_kr.csv', delimiter=',')
-    class_en = np.loadtxt('data/class_score_en.csv', delimiter=',')
+    class_kr = np.loadtxt(os.path.join(os.path.dirname(__file__), 'data/class_score_kr.csv'), delimiter=',')
+    class_en = np.loadtxt(os.path.join(os.path.dirname(__file__), 'data/class_score_en.csv'), delimiter=',')
     data = np.vstack((class_kr, class_en))
 
     # Estimate a line, final = slope * midterm + y_intercept
-    line = [0, 0] # TODO) Please find the best [slope, y_intercept] from 'data'
+    x = data[:,0]
+    y = data[:,1]
+    A = np.vstack((x, np.ones(x.shape[0]))).T
+    A_inv = np.linalg.pinv(A)
+    line = A_inv @ y
 
     # Predict scores
     final = lambda midterm: line[0] * midterm + line[1]
